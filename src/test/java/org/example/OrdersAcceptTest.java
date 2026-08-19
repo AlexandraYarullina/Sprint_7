@@ -66,9 +66,8 @@ public class OrdersAcceptTest extends APIBaseTest{
         response.then().statusCode(CREATE_STATUS_COD);
         track = response.body().path("track");
     }
-//    Получить заказ по его номеру
-//    Проверь:
-//    успешный запрос возвращает объект с заказом;
+
+    //Получить заказ по его номеру
     @DisplayName("Получить заказ по его track")
     @Description("Проверка успешного запроса для получения id заказа, возвращает код 200")
     public void getOrderNumber() {
