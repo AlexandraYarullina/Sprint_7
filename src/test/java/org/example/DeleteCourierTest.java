@@ -16,51 +16,32 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class DeleteCourierTest extends APIBaseTest{
-    DataСourier dataСourier;
     private Integer loginId;
 
     @BeforeEach
     @DisplayName("Создание курьера и авторизация cо всеми обязательными полями")
     @Description("Проверка успешного создания курьера возвращает код 201 и ok: true и успешная авторизация возвращает код 200")
-    public void checkCreateAndAutorize() {
-        dataСourier = new DataСourier("dima36", "4rfe48d1","Дмитрий");
-        Response createResponse  = given()
-                .header("Content-type", "application/json") // заполни header
-                .body(dataСourier) // заполни body
-                .when()
-                .post(CREATE_ENDPOINT_COURIER) // отправь запрос на ручку
-                .then()
-                .statusCode(CREATE_STATUS_COD)
-                .body("ok", is(true))
-                .extract().response();
-
-        Response loginResponse  = given()
-                .header("Content-type", "application/json") // заполни header
-                .body(dataСourier) // заполни body
-                .when()
-                .post(LOGIN_ENDPOINT_COURIER) // отправь запрос на ручку
-                .then()
-                .statusCode(OK_STATUS_COD)
-                .extract().response();
-
-        loginId = loginResponse.body().path("id");
+    public void checkCreateAndLogIn() {
+        createTestCourier();
+        logInTestCourier();
+        loginId = response.body().path("id");
     }
 
     @Test
     @DisplayName("Удалении несуществующего курьера")
     @Description("При передаче несуществующего id возвращается ошибка 404")
     public void deleteNotExistCourier() {
-        int nonExistentId = 865965; // заведомо несуществующий ID
         Response response = given()
                 .header("Content-Type", "application/json")
                 .when()
-                .delete(CREATE_ENDPOINT_COURIER + "/{id}", nonExistentId)
+                .delete(CREATE_ENDPOINT_COURIER + "/{id}", NON_EXISTENT_ID)
                 .then()
                 .assertThat()
                 .statusCode(NOT_FOUND_STATUS_COD)
                 .body("message", equalTo("Курьера с таким id нет."))
                 .extract().response();
     }
+
     @Test
     @DisplayName("Удалении существующего курьера")
     @Description("Проверка, что при удалении существующего курьера возвращаться код 200 и ok: true")
@@ -72,6 +53,7 @@ public class DeleteCourierTest extends APIBaseTest{
                 .body("ok", is(true))
                 .extract().response();
     }
+
     @Test
     @DisplayName("Удаление: ошибка при запросе к коллекции без id")
     @Description("Запрос DELETE на /courier (без id) должен возвращать ошибку 404")
@@ -86,10 +68,11 @@ public class DeleteCourierTest extends APIBaseTest{
                 .body("message", equalTo("Not Found."))
                 .extract().response();
     }
+
     @Test
     @DisplayName("Удаление: ошибка при запросе, ввод символов")
     @Description("Запрос DELETE должен возвращать ошибку 500")
-    void deletesdWithoutId() {
+    void deleteCourierCharacterInput() {
         String nonexistentId = "gert9";
         Response response =given()
                 .header("Content-Type", "application/json")
@@ -105,16 +88,6 @@ public class DeleteCourierTest extends APIBaseTest{
     @AfterEach
     @DisplayName("Удаление созданной записи по id, после каждог теста, если id не нулевой")
     public void deleteCourierLogin() {
-        Integer id =
-                given()
-                        .header("Content-type", "application/json")
-                        .body(dataСourier)
-                        .when()
-                        .post(LOGIN_ENDPOINT_COURIER)
-                        .then().extract().body().path("id");
-        if (id != null) {
-            given()
-                    .delete(CREATE_ENDPOINT_COURIER + "/{id}", id.toString());
-        }
+        deleteTestCourier();
     }
 }

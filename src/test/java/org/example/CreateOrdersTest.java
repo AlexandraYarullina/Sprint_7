@@ -11,7 +11,6 @@ import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
 import static Utils.Constants.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.notNullValue;

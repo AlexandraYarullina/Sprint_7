@@ -17,39 +17,19 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class LoginCourierTest extends APIBaseTest {
-    DataСourier dataСourier;
-    String login ="victor";
-    String password="ge5rt634ry";
 
     @BeforeEach
     @DisplayName("Создание курьера cо всеми обязательными полями")
     @Description("Проверка успешного создания курьера должен возвращаться код 201 и ok: true")
     public void checkCreateCourier() {
-        dataСourier = new DataСourier(login, password);
-        given()
-                .header("Content-type", "application/json") // заполни header
-                .body(dataСourier) // заполни body
-                .when()
-                .post(CREATE_ENDPOINT_COURIER) // отправь запрос на ручку
-                .then()
-                .statusCode(CREATE_STATUS_COD)
-                .and()
-                .assertThat().body("ok", is(true));
+        createTestCourier();
     }
 
     @Test
     @DisplayName("Авторизация курьера cо всеми обязательными полями")
     @Description("Проверяется, что при корректных логине и пароле система возвращает id курьера и код 200")
     public void loginCourierSuccess() {
-        Response response = given()
-                .header("Content-type", "application/json")
-                .body(new DataСourier(login, password)) // заполни body
-                .when()
-                .post(LOGIN_ENDPOINT_COURIER)
-                .then()
-                .statusCode(OK_STATUS_COD)
-                .extract().response();
-
+        logInTestCourier();
         Integer id = response.body().path("id");
         Assertions.assertNotNull(id, "В успешном ответе должен присутствовать id");
     }
@@ -60,7 +40,7 @@ public class LoginCourierTest extends APIBaseTest {
     void checkAuthorizationCourierWithoutLogin() {
         Response response =given()
                 .header("Content-type", "application/json")
-                .body(new DataСourier("", password))
+                .body(new DataCourier("", PASSWORD))
                 .when()
                 .post(LOGIN_ENDPOINT_COURIER);
         response.then().statusCode(BAD_REQUEST_STATUS_COD);
@@ -73,7 +53,7 @@ public class LoginCourierTest extends APIBaseTest {
     void checkAuthorizationCourierWithoutPassword() {
         Response response = given()
                 .header("Content-type", "application/json")
-                .body(new DataСourier(login, ""))
+                .body(new DataCourier(LOGIN, ""))
                 .when()
                 .post(LOGIN_ENDPOINT_COURIER);
         response.then().statusCode(BAD_REQUEST_STATUS_COD);
@@ -86,7 +66,7 @@ public class LoginCourierTest extends APIBaseTest {
     public void checkAuthorizationCourierIncorrectLogin() {
         Response response = given()
                 .header("Content-type", "application/json") // заполни header
-                .body(new DataСourier("victor1856", password))
+                .body(new DataCourier("vera1856", PASSWORD))
                 .when()
                 .post(LOGIN_ENDPOINT_COURIER);
         response.then().statusCode(NOT_FOUND_STATUS_COD);
@@ -100,13 +80,12 @@ public class LoginCourierTest extends APIBaseTest {
     public void checkAuthorizationCourierIncorrectPassword() {
         Response response = given()
                 .header("Content-type", "application/json")
-                .body(new DataСourier(login, "ds3465r6953f"))
+                .body(new DataCourier(LOGIN, "ds3465r6953f"))
                 .when()
                 .post(LOGIN_ENDPOINT_COURIER);
         response.then().statusCode(NOT_FOUND_STATUS_COD);
         response.then().assertThat().body("message", equalTo("Учетная запись не найдена"));
     }
-
 
     @Test
     @DisplayName("Нельзя авторизоваться под несуществующим пользователем")
@@ -114,7 +93,7 @@ public class LoginCourierTest extends APIBaseTest {
     public void checkNonExistentLogin() {
         Response response = given()
                 .header("Content-type", "application/json")
-                .body(new DataСourier("v6876ita3", "f8eo453w06"))
+                .body(new DataCourier("v6876ita3", "f8eo453w06"))
                 .when()
                 .post(LOGIN_ENDPOINT_COURIER);
         response.then().statusCode(NOT_FOUND_STATUS_COD);
@@ -124,16 +103,6 @@ public class LoginCourierTest extends APIBaseTest {
     @AfterEach
     @DisplayName("Удаление созданной записи по id, если id не равен нулю")
     public void deleteCourier() {
-        Integer id =
-                given()
-                        .header("Content-type", "application/json")
-                        .body(dataСourier)
-                        .when()
-                        .post(LOGIN_ENDPOINT_COURIER)
-                        .then().extract().body().path("id");
-        if (id != null) {
-            given()
-                    .delete(CREATE_ENDPOINT_COURIER + "/{id}", id.toString());
-        }
+        deleteTestCourier();
     }
 }

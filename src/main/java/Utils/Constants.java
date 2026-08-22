@@ -8,11 +8,11 @@ public class Constants {
     public static final String CREATE_ENDPOINT_COURIER = "/api/v1/courier";
     public static final String LOGIN_ENDPOINT_COURIER = "/api/v1/courier/login";
     public static final String CREATE_ENDPOINT_ORDERS = "/api/v1/orders";
-    public static final String GET_ENDPOINT_ORDERS_TRACK ="/api/v1/orders/track?t=";
-    public static final String PUT_ENDPOINT_ORDER_ACCEPT ="/api/v1/orders/accept";
+    public static final String GET_ENDPOINT_ORDERS_TRACK = "/api/v1/orders/track?t=";
+    public static final String PUT_ENDPOINT_ORDER_ACCEPT = "/api/v1/orders/accept";
 
-    public static final int OK_STATUS_COD= 200;
-    public static final int CREATE_STATUS_COD= 201;
+    public static final int OK_STATUS_COD = 200;
+    public static final int CREATE_STATUS_COD = 201;
     public static final int CONFLICT_STATUS_COD = 409;
     public static final int BAD_REQUEST_STATUS_COD = 400;
     public static final int NOT_FOUND_STATUS_COD = 404;
@@ -28,4 +28,12 @@ public class Constants {
 
     public static final LocalDate TOMORROW = LocalDate.now().plusDays(1);
     public static final String TOMORROW_STRING = TOMORROW.format(DateTimeFormatter.ISO_LOCAL_DATE);
+
+    public static final String LOGIN = "vera";
+    public static final String PASSWORD = "vera25673";
+    public static final String FIRSTNAME = "Veronika";
+
+    public static final Integer NON_EXISTENT_ID = 865965;
+
+
 }

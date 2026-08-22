@@ -10,10 +10,7 @@ package org.example;
 
 import io.qameta.allure.Description;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static Utils.Constants.*;
 import static Utils.Constants.OK_STATUS_COD;
@@ -21,7 +18,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class OrdersAcceptTest extends APIBaseTest{
-    DataСourier dataСourier;
     private Integer loginId ; //id курьера
     private Integer track;    //тело ответа содержит track
     private Integer orderNumberId; //id заказа
@@ -29,28 +25,10 @@ public class OrdersAcceptTest extends APIBaseTest{
     @BeforeEach
     @DisplayName("Создание курьера и авторизация cо всеми обязательными полями")
     @Description("Проверка успешного создания курьера возвращает код 201 и ok: true и успешная авторизация возвращает код 200")
-    public void checkCreateAndAutorize() {
-        dataСourier = new DataСourier("dimar5846", "4rfe984d16","Дмитрий");
-        Response createResponse  = given()
-                .header("Content-type", "application/json") // заполни header
-                .body(dataСourier) // заполни body
-                .when()
-                .post(CREATE_ENDPOINT_COURIER) // отправь запрос на ручку
-                .then()
-                .statusCode(CREATE_STATUS_COD)
-                .body("ok", is(true))
-                .extract().response();
-
-        Response loginResponse  = given()
-                .header("Content-type", "application/json") // заполни header
-                .body(dataСourier) // заполни body
-                .when()
-                .post(LOGIN_ENDPOINT_COURIER) // отправь запрос на ручку
-                .then()
-                .statusCode(OK_STATUS_COD)
-                .extract().response();
-
-        loginId = loginResponse.body().path("id");
+    public void checkCreateAndLogIn() {
+        createTestCourier();
+        logInTestCourier();
+        loginId = response.body().path("id");
     }
 
     @DisplayName("Создание заказа, проверить код ответа и номер заказа(track)")
@@ -59,7 +37,7 @@ public class OrdersAcceptTest extends APIBaseTest{
         Response response =
                 given()
                         .header("Content-type", "application/json")
-                        .body(new DataOrders("Анастасия","Семенова","Новорижская, д.15","Комсомольская","+7831535392",FOUR_DAYS,TOMORROW_STRING,"Позвонить за час",new String[]{"BLACK"}))
+                        .body(new DataOrders("Виктория","Семенова","Новорижская, д.15","Комсомольская","+7831535392",FOUR_DAYS,TOMORROW_STRING,"Позвонить за час",new String[]{"BLACK"}))
                         .when()
                         .post(CREATE_ENDPOINT_ORDERS);
         response.then().assertThat().body("track", notNullValue());
@@ -162,16 +140,6 @@ public class OrdersAcceptTest extends APIBaseTest{
     @AfterEach
     @DisplayName("Удаление созданной записи по id, после каждого теста, если id не равен нулю")
     public void deleteCourierLogin() {
-        Integer id =
-                given()
-                        .header("Content-type", "application/json")
-                        .body(dataСourier)
-                        .when()
-                        .post(LOGIN_ENDPOINT_COURIER)
-                        .then().extract().body().path("id");
-        if (id != null) {
-            given()
-                    .delete(CREATE_ENDPOINT_COURIER + "/{id}", id.toString());
-        }
+        deleteTestCourier();
     }
 }
