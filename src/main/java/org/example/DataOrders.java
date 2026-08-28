@@ -28,6 +28,7 @@ public class DataOrders {
         this.color = color;
     }
 
+    //Геттеры и сеттеры
     public String getFirstName() {
         return firstName;
     }
